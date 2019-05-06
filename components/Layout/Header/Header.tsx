@@ -21,7 +21,11 @@ import {
   Drawer
 } from "@material-ui/core";
 
-const MenuItems = [new MenuItem("Home", "/"), new MenuItem("About", "/about")];
+const MenuItems = [
+  new MenuItem("Home", "/"),
+  new MenuItem("Login", "/login"),
+  new MenuItem("About", "/about")
+];
 
 const styles = theme => ({
   list: {
