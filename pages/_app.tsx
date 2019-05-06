@@ -21,7 +21,11 @@ export default class MyApp extends App {
     return (
       <Container>
         <Header />
-        <Component {...pageProps} />
+        <Grid container justify="center" alignItems="center">
+          <Grid item xs={11} md={6}>
+            <Component {...pageProps} />
+          </Grid>
+        </Grid>
         <Footer />
       </Container>
     );
