@@ -1,10 +1,18 @@
-import App, { Container } from "next/app";
+import App, { Container, AppComponentProps } from "next/app";
 import React from "react";
 import { Header, Footer } from "../components/Layout";
 
+import { Provider } from "react-redux";
+import withRedux from "next-redux-wrapper";
 import Grid from "@material-ui/core/Grid";
+import { initStore } from "../store/login";
+import { Store } from "redux";
 
-export default class MyApp extends App {
+interface IReduxStore {
+  reduxStore: Store;
+}
+
+class MyApp extends App<IReduxStore & AppComponentProps> {
   static async getInitialProps({ Component, ctx }) {
     let pageProps = {};
 
@@ -16,18 +24,22 @@ export default class MyApp extends App {
   }
 
   render() {
-    const { Component, pageProps } = this.props;
+    const { Component, pageProps, reduxStore } = this.props;
 
     return (
       <Container>
-        <Header />
-        <Grid container justify="center" alignItems="center">
-          <Grid item xs={11} md={6}>
-            <Component {...pageProps} />
+        <Provider store={reduxStore}>
+          <Header />
+          <Grid container justify="center" alignItems="center">
+            <Grid item xs={11} md={6}>
+              <Component {...pageProps} />
+            </Grid>
           </Grid>
-        </Grid>
-        <Footer />
+          <Footer />
+        </Provider>
       </Container>
     );
   }
 }
+
+export default withRedux(initStore)(MyApp);
