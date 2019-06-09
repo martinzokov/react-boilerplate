@@ -4,7 +4,9 @@ import {
   ILoginRequest,
   ILoginSuccess,
   ILoginFailed,
-  ILogout
+  ILogout,
+  ICheckLogin,
+  ICheckLoginSuccess
 } from "./types";
 import { ActionCreator, Dispatch } from "redux";
 import authService from "../../services/api/auth/AuthService";
@@ -26,6 +28,14 @@ const loginFailed: ActionCreator<ILoginFailed> = (message: string) => ({
 
 const logOut: ActionCreator<ILogout> = () => ({
   type: ActionTypes.LOGOUT
+});
+
+const checkLogin: ActionCreator<ICheckLogin> = () => ({
+  type: ActionTypes.CHECK_LOGIN
+});
+
+const checkLoginSuccess: ActionCreator<ICheckLoginSuccess> = () => ({
+  type: ActionTypes.CHECK_LOGIN_SUCCESS
 });
 
 export function sendLogin(loginRequest: Credentials) {
@@ -50,5 +60,34 @@ export function sendLogout() {
   return async (dispatch: Dispatch) => {
     await authService.clearAuthData();
     dispatch(logOut());
+  };
+}
+
+export function checkAuth() {
+  return async (dispatch: Dispatch) => {
+    dispatch(checkLogin());
+    try {
+      const isAuthenticated = await authService.pingAuth();
+
+      if (isAuthenticated) {
+        dispatch(loginSuccess());
+      } else {
+        dispatch(loginFailed());
+      }
+    } catch (e) {
+      if (e.response && e.response.status === 403) {
+        dispatch(
+          loginFailed(
+            e.response && e.response.status === 400
+              ? "Invalid username and password"
+              : "An error occurred"
+          )
+        );
+      } else {
+        dispatch(logOut());
+      }
+    } finally {
+      dispatch(checkLoginSuccess());
+    }
   };
 }

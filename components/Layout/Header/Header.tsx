@@ -41,7 +41,7 @@ const styles = () => ({
     width: 240
   },
   appBar: {
-    position: "relative"
+    position: "relative" as "relative"
   }
 });
 

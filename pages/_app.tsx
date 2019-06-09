@@ -1,12 +1,10 @@
 import App, { Container, AppComponentProps } from "next/app";
 import React from "react";
-import { Header, Footer } from "../components/Layout";
-
 import { Provider } from "react-redux";
 import withRedux from "next-redux-wrapper";
-import Grid from "@material-ui/core/Grid";
 import { makeStore } from "../store";
 import { Store } from "redux";
+import Layout from "../components/Layout/Layout/Layout";
 
 interface IReduxStore {
   store: Store;
@@ -29,14 +27,10 @@ class MyApp extends App<IReduxStore & AppComponentProps> {
     return (
       <Container>
         <Provider store={store}>
-          <Header />
-          <Grid container justify="center" alignItems="center">
-            <Grid item xs={11} md={6}>
-              <Component {...pageProps} />
-            </Grid>
-          </Grid>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </Provider>
-        <Footer />
       </Container>
     );
   }

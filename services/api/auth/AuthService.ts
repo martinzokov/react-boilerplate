@@ -7,7 +7,6 @@ const singletonEnforcer = Symbol();
 
 class AuthApiService {
   private session: AxiosInstance;
-  private clientId: string;
 
   constructor(enforcer) {
     if (enforcer !== singletonEnforcer) {
@@ -43,6 +42,21 @@ class AuthApiService {
 
   getToken() {
     return localStorage.getItem(localStorageTokenKey);
+  }
+
+  public async pingAuth(): Promise<boolean> {
+    const currentToken = this.getToken();
+
+    if (currentToken && currentToken !== "") {
+      const tokenData = await this.session.post<{
+        success: boolean;
+      }>(ApiEndpoints.authenticationCheckPing, null, {
+        headers: { Authorization: `Bearer ${currentToken}` }
+      });
+
+      return tokenData.data.success;
+    }
+    return false;
   }
 
   private async requestToken(body: any) {

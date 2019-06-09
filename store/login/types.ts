@@ -14,6 +14,8 @@ export enum ActionTypes {
   LOGIN_REQUEST = "@@auth/LOGIN_REQUEST",
   LOGIN_SUCCESS = "@@auth/LOGIN_SUCCESS",
   LOGIN_FAILED = "@@auth/LOGIN_FAILED",
+  CHECK_LOGIN = "@@auth/CHECK_LOGIN",
+  CHECK_LOGIN_SUCCESS = "@@auth/CHECK_LOGIN_SUCCESS",
   LOGOUT = "@@auth/LOGOUT"
 }
 
@@ -36,8 +38,10 @@ export interface ILogout extends Action {
   type: ActionTypes.LOGOUT;
 }
 
-// export type LoginActionTypes =
-//   | ILoginRequest
-//   | ILogout
-//   | ILoginFailed
-//   | ILoginSuccess;
+export interface ICheckLogin extends Action {
+  type: ActionTypes.CHECK_LOGIN;
+}
+
+export interface ICheckLoginSuccess extends Action {
+  type: ActionTypes.CHECK_LOGIN_SUCCESS;
+}
