@@ -4,7 +4,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import thunkMiddleware from "redux-thunk";
 
 const rootReducer = combineReducers({
-  login: loginReducer
+  authentication: loginReducer
 });
 
 export type LoginState = ReturnType<typeof rootReducer>;

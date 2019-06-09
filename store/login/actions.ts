@@ -48,7 +48,7 @@ export function sendLogin(loginRequest: Credentials) {
 
 export function sendLogout() {
   return async (dispatch: Dispatch) => {
-    //authService.clearAuthData();
+    await authService.clearAuthData();
     dispatch(logOut());
   };
 }
