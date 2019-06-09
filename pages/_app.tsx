@@ -5,11 +5,11 @@ import { Header, Footer } from "../components/Layout";
 import { Provider } from "react-redux";
 import withRedux from "next-redux-wrapper";
 import Grid from "@material-ui/core/Grid";
-import { initStore } from "../store/login";
+import { makeStore } from "../store";
 import { Store } from "redux";
 
 interface IReduxStore {
-  reduxStore: Store;
+  store: Store;
 }
 
 class MyApp extends App<IReduxStore & AppComponentProps> {
@@ -24,22 +24,22 @@ class MyApp extends App<IReduxStore & AppComponentProps> {
   }
 
   render() {
-    const { Component, pageProps, reduxStore } = this.props;
+    const { Component, pageProps, store } = this.props;
 
     return (
       <Container>
-        <Provider store={reduxStore}>
+        <Provider store={store}>
           <Header />
           <Grid container justify="center" alignItems="center">
             <Grid item xs={11} md={6}>
               <Component {...pageProps} />
             </Grid>
           </Grid>
-          <Footer />
         </Provider>
+        <Footer />
       </Container>
     );
   }
 }
 
-export default withRedux(initStore)(MyApp);
+export default withRedux(makeStore, { debug: true })(MyApp);

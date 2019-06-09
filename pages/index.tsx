@@ -1,16 +1,7 @@
 import React from "react";
-import { Typography, Grid } from "@material-ui/core";
-import { connect } from "react-redux";
-import { LOGIN_FAILED } from "../store/login/types";
+import { Typography, Grid, Button } from "@material-ui/core";
 
 class Index extends React.Component<any, any> {
-  static getInitialProps({ store, isServer, pathname, query }) {
-    store.dispatch({
-      type: LOGIN_FAILED
-    });
-    return { store };
-  }
-
   render() {
     return (
       <div>
@@ -28,4 +19,4 @@ class Index extends React.Component<any, any> {
   }
 }
 
-export default connect(state => state)(Index);
+export default Index;

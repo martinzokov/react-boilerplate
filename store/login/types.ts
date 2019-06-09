@@ -1,3 +1,5 @@
+import { Action } from "redux";
+
 export interface Credentials {
   username: string;
   password: string;
@@ -5,34 +7,37 @@ export interface Credentials {
 
 export interface LoginState {
   loggedIn: boolean;
-  username: string;
+  username?: string;
 }
 
-export const LOGIN_REQUEST = "LOGIN_REQUEST";
-export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
-export const LOGIN_FAILED = "LOGIN_FAILED";
-export const LOGOUT = "LOGOUT";
-
-interface LoginRequestAction {
-  type: typeof LOGIN_REQUEST;
-  credentials: Credentials;
+export enum ActionTypes {
+  LOGIN_REQUEST = "@@auth/LOGIN_REQUEST",
+  LOGIN_SUCCESS = "@@auth/LOGIN_SUCCESS",
+  LOGIN_FAILED = "@@auth/LOGIN_FAILED",
+  LOGOUT = "@@auth/LOGOUT"
 }
 
-interface LoginSuccessAction {
-  type: typeof LOGIN_SUCCESS;
-  credentials: Credentials;
+export interface ILoginRequest extends Action {
+  type: ActionTypes.LOGIN_REQUEST;
 }
 
-interface LogoutAction {
-  type: typeof LOGOUT;
+export interface ILoginSuccess extends Action {
+  type: ActionTypes.LOGIN_SUCCESS;
 }
 
-interface LoginFailedAction {
-  type: typeof LOGIN_FAILED;
+export interface ILoginFailed extends Action {
+  type: ActionTypes.LOGIN_FAILED;
+  payload: {
+    message: string;
+  };
 }
 
-export type LoginActionTypes =
-  | LoginRequestAction
-  | LogoutAction
-  | LoginFailedAction
-  | LoginSuccessAction;
+export interface ILogout extends Action {
+  type: ActionTypes.LOGOUT;
+}
+
+// export type LoginActionTypes =
+//   | ILoginRequest
+//   | ILogout
+//   | ILoginFailed
+//   | ILoginSuccess;

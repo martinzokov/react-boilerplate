@@ -22,9 +22,9 @@ import {
 } from "@material-ui/core";
 
 const MenuItems = [
-  new MenuItem("Home", "/"),
-  new MenuItem("Login", "/login"),
-  new MenuItem("About", "/about")
+  new MenuItem("home_btn", "Home", "/"),
+  new MenuItem("login_btn", "Login", "/login"),
+  new MenuItem("about_btn", "About", "/about")
 ];
 
 const styles = theme => ({
