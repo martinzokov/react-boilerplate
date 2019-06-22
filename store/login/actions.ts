@@ -6,12 +6,12 @@ import {
   ILoginFailed,
   ILogout,
   ICheckLogin,
-  ICheckLoginSuccess
+  OAuthLoginResponse
 } from "./types";
 import { ActionCreator, Dispatch } from "redux";
 import authService from "../../services/api/auth/AuthService";
 
-export const logginRequest: ActionCreator<ILoginRequest> = () => ({
+export const loginRequest: ActionCreator<ILoginRequest> = () => ({
   type: ActionTypes.LOGIN_REQUEST
 });
 
@@ -34,15 +34,14 @@ const checkLogin: ActionCreator<ICheckLogin> = () => ({
   type: ActionTypes.CHECK_LOGIN
 });
 
-const checkLoginSuccess: ActionCreator<ICheckLoginSuccess> = () => ({
-  type: ActionTypes.CHECK_LOGIN_SUCCESS
-});
-
-export function sendLogin(loginRequest: Credentials) {
+export function sendLogin(loginRequestCredentials: Credentials) {
   return async (dispatch: Dispatch) => {
-    dispatch(logginRequest());
+    dispatch(loginRequest());
     try {
-      await authService.login(loginRequest.username, loginRequest.password);
+      await authService.login(
+        loginRequestCredentials.username,
+        loginRequestCredentials.password
+      );
       dispatch(loginSuccess());
     } catch (e) {
       dispatch(
@@ -63,6 +62,32 @@ export function sendLogout() {
   };
 }
 
+export function oAuthLogin(loginResponse: OAuthLoginResponse) {
+  return async (dispatch: Dispatch) => {
+    if (loginResponse.token) {
+      dispatch(checkLogin());
+      try {
+        await authService.setToken(loginResponse.token);
+        const isAuthenticated = await authService.pingAuth();
+
+        if (isAuthenticated) {
+          dispatch(loginSuccess());
+        } else {
+          dispatch(loginFailed("Error with token"));
+        }
+      } catch (e) {
+        if (e.response && e.response.status === 403) {
+          dispatch(loginFailed(loginResponse.error));
+          dispatch(logOut());
+          await authService.clearAuthData();
+        }
+      }
+    } else {
+      dispatch(loginFailed(loginResponse.error));
+    }
+  };
+}
+
 export function checkAuth() {
   return async (dispatch: Dispatch) => {
     dispatch(checkLogin());
@@ -72,7 +97,7 @@ export function checkAuth() {
       if (isAuthenticated) {
         dispatch(loginSuccess());
       } else {
-        dispatch(loginFailed());
+        dispatch(loginFailed("Error with token"));
       }
     } catch (e) {
       if (e.response && e.response.status === 403) {
@@ -83,11 +108,9 @@ export function checkAuth() {
               : "An error occurred"
           )
         );
-      } else {
         dispatch(logOut());
+        await authService.clearAuthData();
       }
-    } finally {
-      dispatch(checkLoginSuccess());
     }
   };
 }

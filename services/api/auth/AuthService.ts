@@ -44,6 +44,10 @@ class AuthApiService {
     return localStorage.getItem(localStorageTokenKey);
   }
 
+  setToken(token: string) {
+    localStorage.setItem(localStorageTokenKey, token);
+  }
+
   public async pingAuth(): Promise<boolean> {
     const currentToken = this.getToken();
 
@@ -56,6 +60,7 @@ class AuthApiService {
 
       return tokenData.data.success;
     }
+    this.clearAuthData();
     return false;
   }
 
@@ -64,7 +69,7 @@ class AuthApiService {
       accessToken: string;
     }>(ApiEndpoints.authentication, body);
 
-    localStorage.setItem(localStorageTokenKey, tokenData.data.accessToken);
+    this.setToken(tokenData.data.accessToken);
   }
 }
 

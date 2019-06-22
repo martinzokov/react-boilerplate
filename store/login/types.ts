@@ -5,9 +5,15 @@ export interface Credentials {
   password: string;
 }
 
+export interface OAuthLoginResponse {
+  token?: string;
+  error?: string;
+}
+
 export interface LoginState {
   loggedIn: boolean;
   username?: string;
+  loginError?: string;
 }
 
 export enum ActionTypes {
@@ -15,7 +21,6 @@ export enum ActionTypes {
   LOGIN_SUCCESS = "@@auth/LOGIN_SUCCESS",
   LOGIN_FAILED = "@@auth/LOGIN_FAILED",
   CHECK_LOGIN = "@@auth/CHECK_LOGIN",
-  CHECK_LOGIN_SUCCESS = "@@auth/CHECK_LOGIN_SUCCESS",
   LOGOUT = "@@auth/LOGOUT"
 }
 
@@ -40,8 +45,4 @@ export interface ILogout extends Action {
 
 export interface ICheckLogin extends Action {
   type: ActionTypes.CHECK_LOGIN;
-}
-
-export interface ICheckLoginSuccess extends Action {
-  type: ActionTypes.CHECK_LOGIN_SUCCESS;
 }

@@ -9,12 +9,20 @@ import {
   StyledComponentProps
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core";
-import ImageButton from "../../Layout/ImageButton/ImageButton";
+import SocialLoginButton from "../../Layout/SocialLoginButton/SocialLoginButton";
 import Link from "next/link";
 import { Credentials } from "store/login/types";
 import { sendLogin } from "../../../store/login/actions";
 import { connect } from "react-redux";
 import { IApplicationState } from "store/types";
+
+import authService from "../../../services/api/auth/AuthService";
+import * as ApiEndpoints from "../../../services/api/constants";
+import {
+  oAuthProvdierFacebook,
+  oAuthProvdierGoogle,
+  oAuthProvdierGithub
+} from "../../../services/api/constants";
 
 const styles = theme => ({
   container: {
@@ -51,11 +59,17 @@ interface ILoginFormDispatchProps {
   login: (credentials: Credentials) => void;
 }
 
-interface ILoginFormStateProps {}
+interface ILoginFormStateProps {
+  loggedIn: boolean;
+  loginError?: string;
+}
 
 interface ILoginFormState {
   email: string;
   password: string;
+  googleLoginUrl: string;
+  facebookLoginUrl: string;
+  githubLoginUrl: string;
 }
 
 export interface ILoginFormProps
@@ -66,7 +80,10 @@ export interface ILoginFormProps
 class LoginForm extends React.Component<ILoginFormProps, ILoginFormState> {
   state = {
     email: "",
-    password: ""
+    password: "",
+    googleLoginUrl: "",
+    facebookLoginUrl: "",
+    githubLoginUrl: ""
   };
 
   onChange = (field: "email" | "password", value: string) => {
@@ -86,6 +103,28 @@ class LoginForm extends React.Component<ILoginFormProps, ILoginFormState> {
     }
   };
 
+  buildSocialLoginUrl = (loginProvider: string): string => {
+    return (
+      ApiEndpoints.baseUrl +
+      "/" +
+      ApiEndpoints.oAuth +
+      loginProvider +
+      "?redirect_uri=" +
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      "/oauth"
+    );
+  };
+
+  componentDidMount() {
+    this.setState({
+      googleLoginUrl: this.buildSocialLoginUrl(oAuthProvdierGoogle),
+      facebookLoginUrl: this.buildSocialLoginUrl(oAuthProvdierFacebook),
+      githubLoginUrl: this.buildSocialLoginUrl(oAuthProvdierGithub)
+    });
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -103,26 +142,36 @@ class LoginForm extends React.Component<ILoginFormProps, ILoginFormState> {
             justify="center"
             spacing={2}
           >
+            {this.props.loginError ? (
+              <Typography variant="caption" color="error">
+                {this.props.loginError}
+              </Typography>
+            ) : (
+              ""
+            )}
             <Typography variant="h6">Sign in with:</Typography>
 
             <Grid item>
-              <ImageButton
+              <SocialLoginButton
                 logoUrl={googleButtonImage.url}
                 backgroundColor="#fff"
                 color="#000"
                 buttonText="Google"
+                href={this.state.googleLoginUrl}
               />
-              <ImageButton
+              <SocialLoginButton
                 logoUrl={fbButtonImage.url}
                 backgroundColor="#1877f2"
                 color="#fff"
                 buttonText="Facebook"
+                href={this.state.facebookLoginUrl}
               />
-              <ImageButton
+              <SocialLoginButton
                 logoUrl={githubButtonImage.url}
                 backgroundColor="#fff"
                 color="#0b0a0a"
                 buttonText="Github"
+                href={this.state.githubLoginUrl}
               />
             </Grid>
 
@@ -183,9 +232,12 @@ const mapDispatchToProps = (dispatch): ILoginFormDispatchProps => ({
   login: (credentials: Credentials) => dispatch(sendLogin(credentials))
 });
 
-const mapStateToProps = (
-  state: IApplicationState
-): ILoginFormStateProps => ({});
+const mapStateToProps = (state: IApplicationState): ILoginFormStateProps => {
+  return {
+    loggedIn: state.authentication.loggedIn,
+    loginError: state.authentication.loginError
+  };
+};
 
 export default connect(
   mapStateToProps,
